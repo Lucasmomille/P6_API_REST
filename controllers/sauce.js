@@ -71,18 +71,55 @@ exports.getAllSauces = (req, res, next) => {
   );
 };
 
-/* exports.likeSauce = (req, res, next) => {
-  const sauceObject = req.params ?
-  {
-    ...JSON.parse(req.body.sauce),
-    likes: req.params.id,
-    
-  } : { ...req.body };
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-    .then(sauce => {
+exports.likeSauce = (req, res, next) => {
+  const like = req.body.like;
+  const dislike = req.body.dislike;
+  const UserId = req.body.userId;
+  const UsersLiked = req.body.usersLiked;
+  const UsersDisliked = req.body.usersDisliked;
 
+
+  Sauce.findOne({ _id: req.params.id })
+    .then(sauce => {
+      switch(like){
+        case 0:
+          Sauce.updateOne(
+            {_id:req.params.id},
+            {$push: {userLiked: UserId}, $inc: {likes: 0, dislikes: 0}}
+          )
+        .then(() => res.status(200).json(sauce))
+        .catch(error => res.status(400).json({ error }));
+        break;
+        case 1:
+          Sauce.updateOne(
+            {_id:req.params.id},
+            {$push: {userLiked: UserId}, $inc: {likes: +1}}
+            
+          )
+        .then(() => res.status(200).json({message: "Sauce likée"}))
+        .catch(error => res.status(400).json({ error }));
+        break;
+        case -1:
+          Sauce.updateOne(
+            {_id:req.params.id},
+            {$push: {userLiked: UserId}, $inc: {dislikes: -1}}
+          )
+        .then(() => res.status(200).json({message: "Sauce dislikée"}))
+        .catch(error => res.status(400).json({ error }));
+        break;        
+      }
+      
     })
-    .catch(error => res.status(400).json({ error }));
+    
 }
 
-{ likers: req.body.id } */
+/* exports.modifySauce = (req, res, next) => {
+  const sauceObject = req.file ?
+    {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+    .catch(error => res.status(400).json({ error }));
+}; */
