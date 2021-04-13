@@ -6,8 +6,9 @@ const userRoutes = require('./routes/user');
 
 const path = require('path');
 const app = express();
+require('dotenv').config()
 
-mongoose.connect('mongodb+srv://lucas_oc:Cours_OC@cluster0.eci95.mongodb.net/test?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGODB,
 
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -25,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.use('/api/sauce', sauceRoutes);
+app.use('/api/sauces', sauceRoutes);
 
 app.use('/api/auth', userRoutes);
 
