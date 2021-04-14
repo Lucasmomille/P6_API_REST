@@ -91,6 +91,7 @@ exports.likeSauce = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
         break;
         case 1:
+          // if userLiked = []
           Sauce.updateOne(
             {_id:req.params.id},
             {$push: {userLiked: UserId}, $inc: {likes: +1}}
