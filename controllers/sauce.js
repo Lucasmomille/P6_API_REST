@@ -8,10 +8,6 @@ exports.createSauce = (req, res, next) => {
   const sauce = new Sauce({
     ...sauceObject,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-    likes: 0,
-    dislikes: 0,
-    usersLiked: [],
-    usersDisliked: []
   });
   sauce.save()
     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
@@ -83,19 +79,40 @@ exports.likeSauce = (req, res, next) => {
     .then(sauce => {
       switch(like){
         case 0:
-          Sauce.updateOne(
+          Sauce.findOne({_id:req.params.id})
+          .then(sauce => {
+            if(sauce.usersLiked.includes(UserId)){
+              Sauce.updateOne(
+                // checker usersLiked
+                {_id:req.params.id},
+                {$pull: {usersLiked: UserId}, $inc: {likes: -1, dislikes: 0}}
+              )
+            .then(() => res.status(200).json(sauce))
+            .catch(error => res.status(400).json({ error }));
+            } else if (sauce.usersDisliked.includes(UserId)) {
+              Sauce.updateOne(
+                // checker usersLiked
+                {_id:req.params.id},
+                {$pull: {usersDisliked: UserId}, $inc: {likes: 0, dislikes: -1}}
+              ).then(() => res.status(200).json(sauce))
+              .catch(error => res.status(400).json({ error }));
+            }else{
+              res.status(400).json({ "error" : "can't find reference" })
+            }
+          })
+         /* Sauce.updateOne(
+            // checker usersLiked
             {_id:req.params.id},
-            {$push: {userLiked: UserId}, $inc: {likes: 0, dislikes: 0}}
+            {$push: {usersLiked: UserId}, $inc: {likes: 0, dislikes: 0}}
           )
         .then(() => res.status(200).json(sauce))
-        .catch(error => res.status(400).json({ error }));
+        .catch(error => res.status(400).json({ error }));*/
         break;
         case 1:
           // if userLiked = []
           Sauce.updateOne(
             {_id:req.params.id},
-            {$push: {userLiked: UserId}, $inc: {likes: +1}}
-            
+            {$push: {usersLiked: UserId}, $inc: {likes: +1, dislikes: 0}}
           )
         .then(() => res.status(200).json({message: "Sauce likée"}))
         .catch(error => res.status(400).json({ error }));
@@ -103,11 +120,12 @@ exports.likeSauce = (req, res, next) => {
         case -1:
           Sauce.updateOne(
             {_id:req.params.id},
-            {$push: {userLiked: UserId}, $inc: {dislikes: -1}}
+            {$push: {usersDisliked: UserId}, $inc: {dislikes: +1, likes: 0}}
           )
         .then(() => res.status(200).json({message: "Sauce dislikée"}))
         .catch(error => res.status(400).json({ error }));
-        break;        
+        break;     
+
       }
       
     })
