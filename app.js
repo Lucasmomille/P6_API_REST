@@ -8,6 +8,10 @@ const path = require('path');
 const app = express();
 require('dotenv').config()
 
+var helmet = require('helmet')
+
+app.use(helmet())
+
 mongoose.connect(process.env.MONGODB,
 
   { useNewUrlParser: true,

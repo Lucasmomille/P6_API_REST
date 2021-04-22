@@ -100,13 +100,7 @@ exports.likeSauce = (req, res, next) => {
               res.status(400).json({ "error" : "can't find reference" })
             }
           })
-         /* Sauce.updateOne(
-            // checker usersLiked
-            {_id:req.params.id},
-            {$push: {usersLiked: UserId}, $inc: {likes: 0, dislikes: 0}}
-          )
-        .then(() => res.status(200).json(sauce))
-        .catch(error => res.status(400).json({ error }));*/
+         
         break;
         case 1:
           // if userLiked = []
