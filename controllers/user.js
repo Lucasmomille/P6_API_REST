@@ -7,9 +7,10 @@ const bcrypt = require('bcrypt');
 exports.signup = (req, res, next) => {
   let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
+  if (regexEmail.test(req.body.email)){
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
-        if (req.body.email == regexEmail){
+        
           const user = new User({
             email: req.body.email,
             password: hash
@@ -17,15 +18,14 @@ exports.signup = (req, res, next) => {
           user.save()
             .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
             .catch(error => res.status(400).json({ error }));
-        } else {
-          res.status(400).json({ "error" : "mail invalide" })
-        }
+        
       }) 
       .catch(error => res.status(500).json({ error }));
+  } else {
+    res.status(400).json({ "error" : "mail invalide" })
+  }
 };
 
-//mail valide
-// hash mail ?
 
 exports.login = (req, res, next) => {
   
