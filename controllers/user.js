@@ -10,15 +10,13 @@ exports.signup = (req, res, next) => {
   if (regexEmail.test(req.body.email)){
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
-        
-          const user = new User({
-            email: req.body.email,
-            password: hash
-          });
-          user.save()
-            .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-            .catch(error => res.status(400).json({ error }));
-        
+        const user = new User({
+          email: req.body.email,
+          password: hash
+        });
+        user.save()
+          .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+          .catch(error => res.status(400).json({ error }));
       }) 
       .catch(error => res.status(500).json({ error }));
   } else {
@@ -37,7 +35,6 @@ exports.login = (req, res, next) => {
         } 
         bcrypt.compare(req.body.password, user.password)
           .then(valid => {
-            
             if (!valid) {
               return res.status(401).json({ error: 'Mot de passe incorrect !' });
             }
@@ -49,7 +46,6 @@ exports.login = (req, res, next) => {
                 { expiresIn: '24h' }
               )
             });
-          
         })
         .catch(error => res.status(500).json({ error }));
         

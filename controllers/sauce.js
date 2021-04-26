@@ -69,10 +69,8 @@ exports.getAllSauces = (req, res, next) => {
 
 exports.likeSauce = (req, res, next) => {
   const like = req.body.like;
-  const dislike = req.body.dislike;
   const UserId = req.body.userId;
-  const UsersLiked = req.body.usersLiked;
-  const UsersDisliked = req.body.usersDisliked;
+  
 
 
   Sauce.findOne({ _id: req.params.id })
@@ -83,7 +81,6 @@ exports.likeSauce = (req, res, next) => {
           .then(sauce => {
             if(sauce.usersLiked.includes(UserId)){
               Sauce.updateOne(
-                // checker usersLiked
                 {_id:req.params.id},
                 {$pull: {usersLiked: UserId}, $inc: {likes: -1, dislikes: 0}}
               )
@@ -91,7 +88,6 @@ exports.likeSauce = (req, res, next) => {
             .catch(error => res.status(400).json({ error }));
             } else if (sauce.usersDisliked.includes(UserId)) {
               Sauce.updateOne(
-                // checker usersLiked
                 {_id:req.params.id},
                 {$pull: {usersDisliked: UserId}, $inc: {likes: 0, dislikes: -1}}
               ).then(() => res.status(200).json(sauce))
@@ -100,10 +96,8 @@ exports.likeSauce = (req, res, next) => {
               res.status(400).json({ "error" : "can't find reference" })
             }
           })
-         
         break;
         case 1:
-          // if userLiked = []
           Sauce.updateOne(
             {_id:req.params.id},
             {$push: {usersLiked: UserId}, $inc: {likes: +1, dislikes: 0}}
@@ -119,20 +113,6 @@ exports.likeSauce = (req, res, next) => {
         .then(() => res.status(200).json({message: "Sauce dislikée"}))
         .catch(error => res.status(400).json({ error }));
         break;     
-
-      }
-      
+      }      
     })
-    
 }
-
-/* exports.modifySauce = (req, res, next) => {
-  const sauceObject = req.file ?
-    {
-      ...JSON.parse(req.body.sauce),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-    .catch(error => res.status(400).json({ error }));
-}; */
