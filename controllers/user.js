@@ -28,14 +28,13 @@ exports.signup = (req, res, next) => {
 // hash mail ?
 
 exports.login = (req, res, next) => {
-  let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   
   
   User.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur non trouvé !' });
-        }
+        } 
         bcrypt.compare(req.body.password, user.password)
           .then(valid => {
             
@@ -53,6 +52,7 @@ exports.login = (req, res, next) => {
           
         })
         .catch(error => res.status(500).json({ error }));
+        
       })
       .catch(error => res.status(500).json({ error }));
     
