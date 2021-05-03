@@ -3,6 +3,7 @@
 
 
 Technologies : Angular, NodeJS, Express 
+
 Base de données : MongoDB
 
 
